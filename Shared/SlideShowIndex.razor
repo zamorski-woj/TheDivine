@@ -1,0 +1,199 @@
+﻿@using System.Threading
+
+
+<div class="slideshow">
+    <div class="picture-with-arrows">
+
+        <span class="oi oi-chevron-left" aria-hidden="true" style="font-size:2rem;" @onclick="() => Manualy(true)">
+        </span>
+
+        <div class="main-image">
+            <img src="@images[currentPosition]" @onclick="() => MaximiseImage(images[currentPosition])" />
+        </div>
+
+        <span class="oi oi-chevron-right" aria-hidden="true" style="font-size:2rem;" @onclick="() => Manualy(false)">
+        </span>
+
+    </div>
+
+    <!--jeśli nie klikamy po pierwszym renderze, to ten komponent będzie pozwalał na sterowanie strzałkami-->
+    <input @ref="input" type="text" style="margin: 0; height:0; width:0; transform:scale(0); overflow: hidden;" @onkeydown="KeyboardEventHandler " />
+
+    <div class="miniature-row">
+        @if (images.Length > 0)
+        {
+            if (images.Length > 9)
+            {
+
+                shownImages = new string[] { images[CorrectIndex(currentPosition - 4)], images[CorrectIndex(currentPosition - 3)], images[CorrectIndex(currentPosition - 2)], images[CorrectIndex(currentPosition - 1)], images[currentPosition], images[CorrectIndex(currentPosition + 1)], images[CorrectIndex(currentPosition + 2)], images[CorrectIndex(currentPosition + 3)], images[CorrectIndex(currentPosition + 4)] };
+
+            }
+            else
+            {
+                shownImages = images;
+            }
+            @foreach (var item in shownImages)
+            {
+                if (Math.Abs(currentPosition % images.Length) == Array.IndexOf(images, item))
+                {
+                    <div class="miniature-frame" style="border-color: #c29521;" @onclick="() => Manualy(Array.IndexOf(images, item))">
+
+                        <img src="@images[Array.IndexOf(images, item)]" class="miniature" style="opacity:100%;" />
+
+                    </div>
+                }
+                else
+                {
+                    <div class="miniature-frame" @onclick="() => Manualy(Array.IndexOf(images, item))">
+
+                        <img src="@images[Array.IndexOf(images, item)]" class="miniature" />
+
+                    </div>
+                }
+            }
+        }
+    </div>
+
+</div>
+
+
+@if (maximised)
+{
+    <ImageFull @bind-chosenImage=@maximisedImage @bind-ifMaximised=@maximised />
+}
+
+
+@code {
+    [Parameter]
+    public string[] images { get; set; }
+    public bool autoWalkthrough = true;
+    public bool autoFocus = true;
+    int currentPosition;
+    CancellationTokenSource cts;
+    CancellationToken ct;
+    string maximisedImage = "";
+    private ElementReference input;
+    private string pressedKey = "";
+    bool maximised = false;
+    public string[] shownImages = new string[9];
+
+
+    private void KeyboardEventHandler(KeyboardEventArgs e)
+    {
+        pressedKey = e.Key;
+        //Console.WriteLine(pressedKey + "pressed");
+        if (pressedKey == "ArrowLeft")
+        {
+            Manualy(true);
+        }
+        else if (pressedKey == "ArrowRight")
+        {
+            Manualy(false);
+        }
+    }
+
+
+    public void Manualy(bool backwards)
+    {
+        if (!cts.IsCancellationRequested)
+        {
+            cts.Cancel();
+        }
+        if (backwards)
+        {
+            currentPosition--;
+        }
+        else
+        {
+            currentPosition++;
+        }
+
+        CorrectCurrentPosition();
+        ChooseImage(images[currentPosition]);
+        cts.Cancel(false);
+    }
+
+    public void Manualy(int position)
+    {
+        currentPosition = position;
+        CorrectCurrentPosition();
+        ChooseImage(images[currentPosition]);
+        cts.Cancel(false);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (autoFocus)
+        {
+            if (firstRender)
+            {
+                await input.FocusAsync();
+            }
+            /* else
+                 {
+                 await input.FocusAsync();
+             }*/
+        }
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        cts = new CancellationTokenSource();
+        ct = cts.Token;
+        if (autoWalkthrough)
+        {
+            Walkthrough();
+        }
+
+    }
+
+    public async Task Walkthrough()
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            await Task.Delay(4000, ct);
+            currentPosition++;
+            CorrectCurrentPosition();
+            await InvokeAsync(() => this.StateHasChanged());
+        }
+    }
+
+    private void CorrectCurrentPosition()
+    {
+        if (currentPosition >= images.Length)
+        {
+            currentPosition -= images.Length;
+        }
+        if (currentPosition < 0)
+        {
+            currentPosition += images.Length;
+        }
+    }
+    private int CorrectIndex(int i)
+    {
+        if (i >= images.Length)
+        {
+            i -= images.Length;
+        }
+        if (i < 0)
+        {
+            i += images.Length;
+        }
+        return i;
+    }
+
+    void MaximiseImage(string obrazek)
+    {
+        maximisedImage = obrazek;
+        maximised = true;
+    }
+
+
+    void ChooseImage(string obrazek)
+    {
+        maximisedImage = obrazek;
+        maximised = false;
+
+    }
+}

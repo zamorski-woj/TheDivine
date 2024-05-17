@@ -1,0 +1,109 @@
+﻿/* General Styles */
+html {
+    
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+
+label{
+    width:20rem;
+}
+option {
+    color: black;
+}
+/* Contact Form Styles */
+
+#contact-form {
+    background-color: var(--contact-form-bg);
+    padding: 0.2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin: auto;
+    margin-top:1rem;
+    margin-bottom:1rem;
+    max-width: 100%;
+    border-radius: 1rem;
+    border: var(--divine-border);
+    width: fit-content;
+}
+
+    #contact-form input,
+    #contact-form select,
+    #contact-form textarea,
+    #contact-form label {
+        margin-bottom: 2px;
+    }
+
+    #contact-form input,
+    #contact-form select,
+    #contact-form textarea {
+        width: 100%;
+        background: #fff;
+        border: 0;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        border-radius: 2px;
+        margin-bottom: 0.7rem;
+        padding: 0.3rem;
+    }
+
+        #contact-form input:focus,
+        #contact-form select:focus,
+        #contact-form textarea:focus {
+            background-color: #E5E6E7;
+        }
+/*
+input:required, textarea:required {
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+#contact-form .required {
+    font-weight: bold;
+    color: #E5E6E7;
+}
+    */
+.mailStatus{
+    text-align:center;
+}
+#success {
+    color: lightgreen;
+}
+#failure
+{
+    color :palevioletred;
+}
+#processing {
+    color: var(--divine-gold);
+}
+.intro {
+    padding: 0.5rem;
+    width: 20rem;
+    margin: auto;
+    color: var(--guzik-opposite);
+}
+/* Make form look nice on smaller screens */
+
+@media only screen and (max-width: 580px) {
+    #contact-form {
+        margin-left: 3%;
+        margin-right: 3%;
+        padding-left: 3%;
+        padding-right: 3%;
+    }
+
+    label{
+        width: 88%;
+    }
+    #intro{
+        width:88%;
+    }
+    .intro{
+        width:88%;
+    }
+}

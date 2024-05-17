@@ -1,0 +1,97 @@
+﻿@using System.Globalization
+@inject NavigationManager Navigation
+@inject IStringLocalizer<CultureSelector> Loc
+
+
+
+
+<div style="display: flex; height:100%; flex-direction: row;   vertical-align: middle; margin-left:0.5rem; margin-right:0.5rem">
+    <!--@Loc["Choose"]-->
+    <!--
+    <select @bind="Culture" style="margin:0.5rem; border-radius:0.5px; background-color: var(--softer); color: var(--font-color); border-width: 1px; border-color: gray ">
+    @foreach (var culture in supportedCultures)
+    {
+
+
+
+            <option class="flex-row"  value="@culture" style="background-color: var(--softer);">
+
+        @culture.NativeName
+
+            </option>
+
+    }
+    </select>-->
+    <div style="display: flex;flex-direction: row;">
+        @foreach (var culture in supportedCultures)
+        {
+            <div style="display: flex;flex-direction: column;">
+
+                @if (culture.Name == "en")
+                {
+
+                    <div @onclick=" ()=> SetCulture(culture)" style="margin-left:0.5rem; margin-right:0.5rem;">
+
+                        <CountryFlag InputType="InputType.ISOA2" ISOA2="gb" Size="FlagSize.Large" style="z-index:3"></CountryFlag>
+                    </div>
+
+
+                }
+                else
+                {
+                    <div @onclick=" ()=> SetCulture(culture)" style="margin-left:0.5rem; margin-right:0.5rem; ">
+                        <CountryFlag InputType="InputType.ISOA2" ISOA2=@culture.Name Size="FlagSize.Large" style="z-index:3"></CountryFlag>
+                    </div>
+
+                }
+
+                <!--@culture.NativeName-->
+
+
+            </div>
+        }
+    </div>
+</div>
+
+
+@code
+{
+    private CultureInfo[] supportedCultures = new[]
+    {
+        new CultureInfo("en"),
+        new CultureInfo("pl"),
+        new CultureInfo("de"),
+
+    };
+    protected override void OnInitialized()
+    {
+        Culture = CultureInfo.CurrentCulture;
+    }
+
+    private CultureInfo Culture
+    {
+        get => CultureInfo.CurrentCulture;
+        set
+        {
+            if (CultureInfo.CurrentCulture != value)
+            {
+                var uri = new Uri(Navigation.Uri)
+                    .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+                var cultureEscaped = Uri.EscapeDataString(value.Name);
+                var uriEscaped = Uri.EscapeDataString(uri);
+
+                Navigation.NavigateTo(
+                    $"Culture/Set?culture={cultureEscaped}&redirectUri={uriEscaped}",
+                    forceLoad: true);
+            }
+        }
+    }
+    private void SetCulture(CultureInfo selectedCulture)
+    {
+        Culture = selectedCulture;
+    }
+}
+
+
+
+

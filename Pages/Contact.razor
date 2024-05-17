@@ -1,0 +1,161 @@
+﻿@page "/contact"
+
+@using System.Globalization
+@using Microsoft.Extensions.Logging
+@using System.Net.Mail;
+@using System.Net;
+@inject IStringLocalizer<Contact> Loc
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>@Loc["Contact"]</PageTitle>
+
+
+
+<div id="contact-form">
+
+    <div id="intro" style="align-content:center; margin: 0rem;">
+        <h5 class="intro">@Loc["intro"]</h5>
+        <h4 class="intro">@Loc["contactus"]</h4>
+
+    </div>
+
+    <p id="processing" class="mailStatus" hidden="@idle"> @Loc["processing"] </p>
+    <p id="failure" class="mailStatus" hidden="@noSendingError"> @Loc["error"]  <br /> @error  </p>
+    <p id="success" class="mailStatus" hidden="@notYetSent"> @Loc["sent"]  </p>
+
+    <EditForm style="margin-top:0rem" Model="formModel" OnValidSubmit=" ()=>Send(formModel)" OnInvalidSubmit="InvalidSubmit">
+
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+
+        <div>
+            <label for="name">
+                <span class="required">@Loc["name"]: *</span><br />
+                <InputText @bind-Value="formModel.Name" id="name" name="name" placeholder="@Loc["namePlaceholder"]" required="required" tabindex="1" autofocus="autofocus" style="width:100%; color:black;" />
+            </label>
+        </div>
+        <div>
+            <label for="email">
+                <span class="required">@Loc["email"]: *</span><br />
+                <InputText @bind-Value="formModel.Email" type="email" id="email" name="email" placeholder="@Loc["emailPlaceholder"]" tabindex="2" required="required" style="width:100%;  color:black;" />
+            </label>
+        </div>
+        <div>
+            <label for="product">
+                <span>@Loc["product"]: </span><br />
+                <select @bind="formModel.Product" id="product" name="product" tabindex="4" style="color:black;">
+                    <option value=""></option>
+                    <option value="Kilka">@Loc["multiple"]</option>
+                    @foreach(DivineProduct p in ProductList.products)
+                    {
+                        <option value="@p.name">@p.name</option>
+                    }
+                </select>
+            </label>
+        </div>
+        <div>
+            <label for="message">
+                <span class="required"> @Loc["message"]: *</span><br />
+                <InputTextArea @bind-Value="formModel.Message" id="message" name="message" placeholder= "@Loc["messagePlaceholder"]" tabindex="5" required="required" style="overflow-y: hidden;  width:100%; min-height:4rem; color:black; padding:0rem"  oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
+            </label>
+        </div>
+        <div>
+            <button class="guzik guzik-opposite" name="submit" type="submit" id="submit" disabled="@disableSend">@Loc["send"]</button>
+        </div>
+    </EditForm>
+
+</div>
+
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Product { get; set; }
+
+    public ContactFormModel formModel { get; set; } = new();
+
+    public bool notYetSent = true, noSendingError = true, idle = true, disableSend = false;
+    string error="";
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Product != null)
+        {
+            formModel.Product = Product;
+        }
+        // await Task.Yield();
+    }
+
+    public async Task ClickSend()
+    {
+        notYetSent = true;
+        noSendingError = true;
+        idle = false;
+        error = "";
+        disableSend = true;
+
+        //  await Task.Yield();
+    }
+
+    public async Task InvalidSubmit()
+    {
+        disableSend = false;
+
+        notYetSent = true;
+        noSendingError = true;
+        idle = true;
+        error = "";
+        // await Task.Yield();
+
+    }
+
+
+    private async Task ProcessMail(ContactFormModel cfm)
+    {
+        Controllers.EmailController emailController = new();//new
+
+        string temat = "";
+        if (cfm.Product.Length > 0)
+        {
+            temat = cfm.Name + " zamawia " + cfm.Product;
+        }
+        else
+        {
+            temat = "Wiadomość od " + cfm.Name;
+        }
+        emailController.Send("the.divine@op.pl", "the.divine@op.pl", temat, cfm.ToMail());
+        // await Task.Yield();
+    }
+
+
+    public async Task Send(ContactFormModel cfm) 
+    {
+        await ClickSend();
+
+        try
+        {
+            throw new Exception("Formularz kontaktowy został zdezaktualizowany w związku z brakiem płatności.");
+            await ProcessMail(cfm);
+            idle = true;          
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+            Console.WriteLine(ex);
+            idle = true;
+            noSendingError = false;
+            disableSend = false;
+            return;
+        }
+        idle = true;
+        noSendingError = true;
+        notYetSent = false;
+        disableSend = false;
+        formModel = new();
+    }
+}

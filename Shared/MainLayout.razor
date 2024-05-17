@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>The Divine</PageTitle>
+
+<div class="page @GetCssClass()">
+    <div class="sidebar @GetCssClass()" style="position:sticky; z-index:100" >
+        <NavMenu @bind-lightTheme=@ifLightTheme/>
+    </div>
+
+    <main class="@GetCssClass()">
+        <!-- current theme is light? @ifLightTheme-->
+
+        <article class="@GetCssClass()">
+            @Body
+
+        </article>
+
+    </main>
+</div>
+
+@code {
+    public bool ifLightTheme = true;
+    
+    private string GetCssClass()
+    {
+        if (ifLightTheme)
+        {
+            return "light-mode";
+        }
+        else
+        {
+            return "";
+        }
+    }
+}

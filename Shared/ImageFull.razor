@@ -1,0 +1,44 @@
+﻿
+@if (chosenImage!=null && chosenImage.Length>0 && ifMaximised)
+{
+	<div class="fullerScreen">
+		<div class="fullImage" @onclick="(e => Close())">
+			<img class="maxiaturka" src="@chosenImage" alt="@chosenImage" />
+			<!--
+				<h5 object-fit="contain" padding="0" margin="0"> @chosenImage</h5
+				<br>
+			</div>
+			-->
+		</div>
+	</div>
+}
+
+@code
+{
+	[Parameter]
+	public string chosenImage { get; set; }
+	[Parameter]
+	public bool ifMaximised { get; set; }
+
+	public void Close()
+	{
+		chosenImage = "";
+		ifMaximised = false;
+	}
+
+	[Parameter]
+	public EventCallback<string> chosenImageChanged { get; set; }
+
+	private async Task ChangeValue()
+	{
+		await chosenImageChanged.InvokeAsync(chosenImage);
+	}
+
+	[Parameter]
+	public EventCallback<bool> ifMaximisedChanged { get; set; }
+
+	private async Task ChangeifMaximised()
+	{
+		await ifMaximisedChanged.InvokeAsync(ifMaximised);
+	}
+}

@@ -1,0 +1,42 @@
+﻿@page "/products"
+@using System.Globalization
+@inject IStringLocalizer<Products> Loc
+
+<PageTitle>@Loc["Products"]</PageTitle>
+<br />
+
+<h1 style="margin:1.5rem; color:var(--divine-gold); text-decoration:underline; ">@Loc["Products"]</h1>
+
+
+<div class="product-flex-container">
+    @for (int i = 1; i <= ProductList.products.Length; i++)
+    {
+        <div class="product-item">
+            <div style="display:flex; align-content:center; align-items:center; padding: 0rem;">
+                <SlideShowProducts images="ProductList.products[i-1].imagePaths" />
+            </div>
+            <div style="display:flex; flex-direction:column; align-content:center; align-items:center; padding: 0rem; margin:1rem;">
+                <h4 style="color:var(--product-font)">@ProductList.products[i-1].name</h4>
+                <p>@ProductList.products[i-1].description <!--@Loc["productDesc"] @i-->  </p>
+                <a class="guzik guzik-opposite" href="/contact/?product=@ProductList.products[i-1].name">@Loc["chooseThis"]</a>
+            </div>
+        </div>
+    }
+
+</div>
+
+
+<br />
+<br />
+<!--<button class="guzik" href="/contact">@Loc["goToOrder"]</button>-->
+<a class="guzik" href="/contact">@Loc["goToOrder"]</a>
+<br />
+<br />
+
+
+@code {
+
+
+
+
+}

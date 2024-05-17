@@ -1,0 +1,89 @@
+﻿@page "/"
+@using System.Globalization
+@inject IStringLocalizer<Index> Loc
+
+<PageTitle>The Divine</PageTitle>
+
+<div style="display:flex; align-content:center; align-items:center; padding: 0rem;">
+    <SlideShowIndex images="ProductList.GetImages()"/>
+
+</div>
+
+<h2 style="justify-self: center; padding:1rem; color:var(--divine-gold)"> @Loc["Slogan"]</h2><!-- color:var(--divine-gold);-->
+
+<div >
+    <p class="main-paragraphs">
+        @Loc["Greeting"]
+    </p>
+
+    <p class="main-paragraphs">
+
+        @Loc["2"]
+    </p>
+
+    <p class="main-paragraphs">
+        @Loc["3"]
+    </p>
+
+    <p class="main-paragraphs">
+        @Loc["4"]
+    </p>
+
+    <p class="main-paragraphs">
+        @Loc["5"]
+    </p>
+    <br />
+    <br />
+    <!--<button class="guzik" href="/products">@Loc["goToProducts"]</button>-->
+    <a class="guzik" href="/products">@Loc["goToProducts"]</a>
+    <br />
+    <br />
+
+</div>
+
+
+@code {
+
+
+
+    //string[] images = ProductList.GetImages();
+    /*    {
+        "pictures/rysunki/webp/1.webp",
+        "pictures/rysunki/webp/2.webp",
+        "pictures/rysunki/webp/3.webp",
+        "pictures/rysunki/webp/4.webp",
+        "pictures/rysunki/webp/5.webp",
+        "pictures/rysunki/webp/6.webp",
+        "pictures/rysunki/webp/7.webp",
+        "pictures/rysunki/webp/8.webp",
+        "pictures/rysunki/webp/9.webp",
+        "pictures/rysunki/webp/10.webp",
+        "pictures/rysunki/webp/11.webp",
+        "pictures/rysunki/webp/12.webp",
+        "pictures/rysunki/webp/13.webp",
+        "pictures/rysunki/webp/14.webp",
+        "pictures/rysunki/webp/15.webp",
+        "pictures/rysunki/webp/16.webp",
+        "pictures/rysunki/webp/17.webp",
+        "pictures/rysunki/webp/18.webp",
+        "pictures/rysunki/webp/19.webp",
+        "pictures/rysunki/webp/20.webp",
+        "pictures/rysunki/webp/21.webp",
+        "pictures/rysunki/webp/22.webp",
+        "pictures/rysunki/webp/23.webp",
+        "pictures/rysunki/webp/24.webp",
+        "pictures/rysunki/webp/25.webp",
+        "pictures/rysunki/webp/26.webp",
+        "pictures/rysunki/webp/27.webp",
+        "pictures/rysunki/webp/28.webp",
+        "pictures/rysunki/webp/29.webp",
+        "pictures/rysunki/webp/30.webp",
+        "pictures/rysunki/webp/31.webp",
+        "pictures/rysunki/webp/32.webp",
+        "pictures/rysunki/webp/33.webp",
+        "pictures/rysunki/webp/34.webp",
+        "pictures/rysunki/webp/35.webp", 
+    };
+    */
+
+}

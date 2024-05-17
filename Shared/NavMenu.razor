@@ -1,0 +1,166 @@
+﻿@inject IStringLocalizer<NavMenu> Loc;
+@inject IJSRuntime js;
+
+<div @onclick="ToggleNavMenu" class="fullMenu">
+    
+    <div class="top-row navbar  navbar-dark"> <!--@NavBarColor(lightTheme) ">-->
+        <div class="container-fluid" style="align-items:center; justify-content:center; align-content: center">
+            <a class="navbar-brand" href="" style="">THE DIVINE</a>
+            <div title="Navigation menu" class="navbar-toggler" style="">
+                <span class="navbar-toggler-icon" style=""></span>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="@NavMenuCssClass"  @onclick="ToggleNavMenu">
+        <nav class="nav-list">
+         
+
+            <div class="nav-item">
+                <NavLink class="nav-link" href="/" Match="NavLinkMatch.All" style="color: var(--font-color)">
+                    @Loc["Home"]
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="products" style="color: var(--font-color)">
+                    @Loc["Products"]
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="contact" style="color: var(--font-color)">
+                    @Loc["Contact"]
+                </NavLink>
+            </div>
+        </nav>
+
+
+    </div>
+
+    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+
+       <!-- @Loc["theme"]-->
+        <div class="light-switch">
+            <span class="oi oi-moon" aria-hidden="true" style="font-size:1.3rem; @IconColor(lightTheme)"></span>
+            <label class="switch">
+                <input type="checkbox" checked="@isChecked" @oninput="ThemeChanged" @onchange="ifLightThemeChanged">
+                <span class="slider">
+                </span>
+            </label>
+            <span class="oi oi-sun" aria-hidden="true" style="font-size:1.3rem; @IconColor(!lightTheme)"></span>
+        </div>
+
+        <div class="culture">
+            <CultureSelector />
+        </div>
+
+    </div>
+
+
+
+</div>
+
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    [Parameter]
+    public bool lightTheme { get; set; } = true;
+
+    // Internal field holding checkbox state
+    private bool isChecked;
+
+    // updates the internal value whwenever the component is updated
+    // You may not want that??
+    protected override void OnParametersSet()
+    {
+        isChecked = this.lightTheme;
+    }
+
+    private void ThemeChanged(ChangeEventArgs e)
+    {
+        // get the checkbox state
+        lightTheme =(bool) e.Value;
+        //Console.WriteLine($"Light theme {lightTheme}");
+        UpdatelightThemeChanged();
+    }
+
+    [Parameter]
+    public EventCallback<bool> lightThemeChanged { get; set; }
+
+    private async Task UpdatelightThemeChanged()
+    {
+        await lightThemeChanged.InvokeAsync(lightTheme);
+    }
+
+    private string IconColor(bool theme)
+    {
+        if(!theme)
+        {
+            return "color: var(--divine-gold)"; 
+        }
+        else
+        {
+            return "color: var(--font-color)";
+        }
+    }
+
+    private string NavBarColor(bool theme)
+    {
+        if (!theme)
+        {
+            return "navbar-dark";
+        }
+        else
+        {
+            return "navbar-light";
+        }
+    }
+    private readonly string keyTheme = "LightTheme";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var themeFromLocalStorage = await js.InvokeAsync<string>("readLocalStorage", keyTheme);
+            if (!string.IsNullOrEmpty(themeFromLocalStorage))
+            {
+                lightTheme = ToBool(themeFromLocalStorage);
+                await UpdatelightThemeChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private async void ifLightThemeChanged(ChangeEventArgs args)
+    {
+        lightTheme = ToBool(args.Value.ToString());
+        await js.InvokeVoidAsync("addToLocalStorage", keyTheme, lightTheme);
+
+    }
+
+    private bool ToBool(string s)
+    {
+        if (s == "true" || s == "True")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
